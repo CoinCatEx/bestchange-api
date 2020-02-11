@@ -7,6 +7,6 @@ jobs:
     name: Debug
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@v1
       - run: npm install
       - run: npm test
