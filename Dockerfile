@@ -3,7 +3,6 @@ RUN mkdir -p /usr/src
 WORKDIR /usr/src
 
 COPY ./package.json /usr/src
-COPY ./package-lock.json /usr/src
 
 RUN npm config set unsafe-perm true
 RUN npm set progress=false && npm config set depth 0
