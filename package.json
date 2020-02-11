@@ -1,0 +1,67 @@
+{
+  "name": "coincat-bestchange",
+  "version": "0.0.1",
+  "description": "Bestchange api",
+  "author": "coincat.in",
+  "license": "MIT",
+  "scripts": {
+    "build": "./node_modules/.bin/tsc --project tsconfig.json",
+    "build:prod": "./node_modules/.bin/tsc --project tsconfig-prod.json",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "start:dev": "nodemon",
+    "start:debug": "nodemon  --config nodemon-debug.json",
+    "start:prod": "node build/main.js",
+    "start": "node dist/main.js",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
+  },
+  "dependencies": {
+    "@nestjs/common": "^6.11.6",
+    "@nestjs/core": "^6.11.6",
+    "@nestjs/platform-express": "^6.11.6",
+    "adm-zip": "^0.4.14",
+    "bignumber.js": "^8.0.1",
+    "class-transformer": "^0.1.10",
+    "class-transformer-validator": "^0.6.0",
+    "class-validator": "^0.9.1",
+    "dotenv": "^6.1.0",
+    "moment": "^2.24.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^6.5.4",
+    "typescript": "^3.4.5"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^6.11.6",
+    "@types/adm-zip": "^0.4.32",
+    "@types/express": "^4.16.0",
+    "@types/jest": "^23.3.1",
+    "@types/node": "^10.7.1",
+    "@types/supertest": "^2.0.5",
+    "jest": "^23.5.0",
+    "nodemon": "^1.18.3",
+    "prettier": "^1.14.2",
+    "supertest": "^3.1.0",
+    "ts-jest": "^23.1.3",
+    "ts-loader": "^4.4.2",
+    "ts-node": "^7.0.1",
+    "tsconfig-paths": "^3.5.0",
+    "tslint": "5.11.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}
