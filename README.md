@@ -3,7 +3,7 @@
 ![Licence](https://img.shields.io/npm/l/@nestjs/core.svg) 
 ![CI](https://github.com/coincatex/bestchange-api/workflows/CI/badge.svg) 
 [![Docker](https://img.shields.io/docker/cloud/build/coincat/bestchange-api.svg)](https://hub.docker.com/r/coincat/bestchange-api)
-![Docker Registry](https://img.shields.io/docker/pulls/coincat/bestchange-api.svg)
+[![Docker Registry](https://img.shields.io/docker/pulls/coincat/bestchange-api.svg)](https://hub.docker.com/r/coincat/bestchange-api)
 
 > Easy to use Bestchange api HTTP server with first-class support for [Docker](#docker) 
 
