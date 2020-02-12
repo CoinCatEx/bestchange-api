@@ -71,6 +71,19 @@ $ npm run start:prod
 You need to pass next environment variables in order to configure service: `WATCH_TIME_INTERVAL_MS` and `API_URI`.
 In order to get API uri you may need to contact [Bestchange](https://bestchange.ru).
 
+## Usage
+There are only two endpoints:
+
+returns all currencies available
+```
+/currencies
+```
+
+returns all rates for selected market direction
+```
+/?from=<CUR>&to=<CUR>
+```
+
 ## Contributing
 
 If you'd like to add additional information from API, feel free to file a pull request.
