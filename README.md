@@ -74,5 +74,7 @@ In order to get API uri you may need to contact [Bestchange](https://bestchange.
 ## Contributing
 
 If you'd like to add additional information from API, feel free to file a pull request.
-
 The best way to submit feedback and report bugs is to open a GitHub issue.
+
+## Stay in touch
+* Author - [CoinCat](https://coincat.in)
