@@ -8,18 +8,21 @@ export class FetcherService {
   constructor() {}
 
   fetchData(uri: string, path: string): Observable<string> {
+    console.log(`fetching data from uri ${uri}`);
     const result = new Subject<string>();
-    var file = fs.createWriteStream(path);
+    const file = fs.createWriteStream(path);
     http
-      .get(uri, function(response) {
+      .get(uri, (response) => {
         response.pipe(file);
-        file.on('finish', function() {
+        file.on('finish', () => {
+          console.log(`data fetched from uri ${uri}`);
           file.close();
           result.next(path);
         });
       })
-      .on('error', function(err) {
+      .on('error', (err) => {
         // Handle errors
+        console.error(`can't fetch data from uri ${uri}`, err);
         fs.unlink(path, _ => {});
         result.error(err.message);
       });

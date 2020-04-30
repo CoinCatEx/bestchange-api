@@ -10,6 +10,7 @@ export class DataService {
   constructor() {}
 
   getCurrencies(currecies: Buffer, codes: Buffer): Currency[] {
+    console.log(`obtaining currencies from Buffer...`);
     let mapper: { [key: string]: Currency } = {};
     const cs = this.getData(currecies).map(item => {
       let code = item[2];
@@ -26,11 +27,13 @@ export class DataService {
     this.getData(currecies).forEach(item => {
       mapper[item[0]].linkCode = item[1];
     });
+    console.log(`got ${cs.length} currencies`);
     return cs;
   }
 
   getRates(data: Buffer): Rate[] {
-    return this.getData(data).map(item => {
+    console.log(`obtaining rates from Buffer...`);
+    const rates = this.getData(data).map(item => {
       return plainToClass(Rate, {
         from: item[0],
         to: item[1],
@@ -41,20 +44,27 @@ export class DataService {
         reviews: item[6],
       });
     });
+    console.log(`got ${rates.length} rates`);
+    return rates;
   }
 
   getExchanges(data: Buffer): BExchange[] {
-    return this.getData(data).map(item => {
+    console.log(`obtaining exchanges from Buffer...`);
+    const exchanges = this.getData(data).map(item => {
       return plainToClass(BExchange, {
         id: item[0],
         name: item[1],
       });
     });
+    console.log(`got ${exchanges.length} rates`);
+    return exchanges;
   }
 
   getUpdated(data: Buffer): Date {
+    console.log(`obtaining updated from Buffer...`);
     const s = this.getData(data)[0][0].split('=')[1];
     const m = moment(s, 'h:mm:ss, DD MMMM');
+    console.log(`got ${m.toISOString()} updated`);
     return m.toDate();
   }
 
