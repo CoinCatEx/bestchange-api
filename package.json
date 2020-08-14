@@ -28,6 +28,7 @@
     "class-transformer-validator": "^0.6.0",
     "class-validator": "^0.9.1",
     "dotenv": "^6.1.0",
+    "iconv": "^3.0.0",
     "moment": "^2.24.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.4",

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Currency } from '../../models/currency';
 import { plainToClass } from 'class-transformer';
 import { Rate } from '../../models/rate';
-import * as moment from 'moment';
 import { BExchange } from '../../models/bexchange';
+import { Iconv } from 'iconv';
 
 @Injectable()
 export class DataService {
@@ -62,15 +62,57 @@ export class DataService {
 
   getUpdated(data: Buffer): Date {
     console.log(`obtaining updated from Buffer...`);
-    const s = this.getData(data)[0][0].split('=')[1];
-    const m = moment(s, 'h:mm:ss, DD MMMM');
-    console.log(`got ${m.toISOString()} updated`);
-    return m.toDate();
+    return this.convertToDate(this.getData(data)[0][0].split('=')[1]);
+  }
+
+  convertToDate(str: string): Date {
+    const dateArr = str.split(', ');
+    const hoursArr = dateArr[0].split(':');
+    const mArr = dateArr[1].split(' ');
+    const date = new Date();
+    date.setMonth(this.mapMonth(mArr[1]));
+    date.setDate(parseInt(mArr[0], 10));
+    date.setHours(parseInt(hoursArr[0], 10));
+    date.setMinutes(parseInt(hoursArr[1], 10));
+    date.setSeconds(parseInt(hoursArr[2], 10));
+    date.setHours(date.getHours() - 3);
+    console.log(`got ${date.toString()} updated`);
+    return date;
   }
 
   private getData(data: Buffer): any[][] {
-    const content = data.toString('utf-8');
+    const conv = Iconv('windows-1251', 'utf8');
+    const content = conv.convert(data).toString();
     const lines = content.split(/\r?\n/g);
     return lines.map(line => line.split(';'));
+  }
+
+  private mapMonth(month: string): number {
+    switch (month) {
+      case 'января':
+        return 0;
+      case 'февраля':
+        return 1;
+      case 'марта':
+        return 2;
+      case 'апреля':
+        return 3;
+      case 'мая':
+        return 4;
+      case 'июня':
+        return 5;
+      case 'июля':
+        return 6;
+      case 'августа':
+        return 7;
+      case 'сентября':
+        return 8;
+      case 'октября':
+        return 9;
+      case 'ноября':
+        return 10;
+      case 'декабря':
+        return 11;
+    }
   }
 }
