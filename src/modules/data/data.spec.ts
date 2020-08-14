@@ -20,7 +20,7 @@ describe('Data spec', () => {
       const d = '23:24:32, 13 августа';
       const expected = new Date(1597350272000);
       expected.setMilliseconds(0);
-      const res = dataService.convertToDate(d, 0);
+      const res = dataService.convertToDate(d, 3);
       res.setMilliseconds(0);
       expect(res.getTime()).toEqual(expected.getTime());
       done();
