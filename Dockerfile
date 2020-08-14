@@ -2,6 +2,15 @@ FROM node:11.4.0-slim as builderNode
 RUN mkdir -p /usr/src
 WORKDIR /usr/src
 
+# Install Python.
+RUN \
+  apt-get update && \
+  apt-get install -y software-properties-common && \
+  add-apt-repository ppa:deadsnakes/ppa && \
+  apt-get install -y python2.7 python-dev python-pip python-virtualenv && \
+  apt-get install -y ssh git && \
+  rm -rf /var/lib/apt/lists/*
+
 COPY ./package.json /usr/src
 
 RUN npm config set unsafe-perm true
