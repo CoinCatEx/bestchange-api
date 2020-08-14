@@ -62,10 +62,10 @@ export class DataService {
 
   getUpdated(data: Buffer): Date {
     console.log(`obtaining updated from Buffer...`);
-    return this.convertToDate(this.getData(data)[0][0].split('=')[1]);
+    return this.convertToDate(this.getData(data)[0][0].split('=')[1], 3);
   }
 
-  convertToDate(str: string): Date {
+  convertToDate(str: string, gmt = 0): Date {
     const dateArr = str.split(', ');
     const hoursArr = dateArr[0].split(':');
     const mArr = dateArr[1].split(' ');
@@ -75,7 +75,7 @@ export class DataService {
     date.setHours(parseInt(hoursArr[0], 10));
     date.setMinutes(parseInt(hoursArr[1], 10));
     date.setSeconds(parseInt(hoursArr[2], 10));
-    date.setHours(date.getHours() - 3);
+    date.setHours(date.getHours() - gmt);
     console.log(`got ${date.toString()} updated`);
     return date;
   }
