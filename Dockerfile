@@ -4,6 +4,7 @@ RUN \
   apt-get update && \
   apt-get install -y software-properties-common && \
   add-apt-repository ppa:deadsnakes/ppa && \
+  apt-get install -y python2.7 python-dev python-pip python-virtualenv && \
   apt-get install -y ssh git && \
   rm -rf /var/lib/apt/lists/*
 
