@@ -15,10 +15,12 @@ export class FetcherService {
     const file = dirArr.pop();
     const dir = dirArr.join('/');
     const fileBackup = `${file}.backup`;
-    const command = `aria2c --allow-overwrite=true --check-certificate=false --dir ${dir} -x 10 -s 10 -o ${file} ${uri} && mv -f ${[
+    const command = `aria2c --allow-overwrite=true --check-certificate=false --dir ${
+      dir.length ? dir : './'
+    } -x 10 -s 10 -o ${file} ${uri} && mv -f ${[...dirArr, file].join('/')} ${[
       ...dirArr,
-      file,
-    ].join('/')} ${[...dirArr, fileBackup].join('/')}`;
+      fileBackup,
+    ].join('/')}`;
     exec(command, (err, stdout, stderr) => {
       if (err) {
         console.error(`error fetching data from uri ${uri}`);
