@@ -1,15 +1,14 @@
-FROM node:11.4.0-slim as builderNode
-RUN mkdir -p /usr/src
-WORKDIR /usr/src
-
+FROM node:14.2-slim as builderNode
 # Install Python.
 RUN \
   apt-get update && \
   apt-get install -y software-properties-common && \
   add-apt-repository ppa:deadsnakes/ppa && \
-  apt-get install -y python2.7 python-dev python-pip python-virtualenv && \
   apt-get install -y ssh git && \
   rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /usr/src
+WORKDIR /usr/src
 
 COPY ./package.json /usr/src
 
@@ -26,7 +25,18 @@ COPY ./tsconfig-prod.json /usr/src/tsconfig-prod.json
 RUN npm run build:prod
 
 
-FROM node:11.4.0-slim as prodNode
+FROM node:14.2-slim as prodNode
+
+# Install Python.
+RUN \
+  apt-get update && \
+  apt-get install -y software-properties-common && \
+  add-apt-repository ppa:deadsnakes/ppa && \
+  apt-get install -y ssh git && \
+  apt-get install -y aria2 && \
+  apt-get install -y lbzip2 && \
+  rm -rf /var/lib/apt/lists/*
+
 RUN mkdir -p /usr/src
 COPY --from=builderNode /usr/src/build /usr/src/build
 COPY --from=builderNode /usr/src/package.json /usr/src
