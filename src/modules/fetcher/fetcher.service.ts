@@ -15,7 +15,7 @@ export class FetcherService {
     const file = dirArr.pop();
     const dir = dirArr.join('/');
     const fileBackup = `${file}.backup`;
-    const command = `aria2c --allow-overwrite=true --check-certificate=false --dir ${
+    const command = `aria2c --remove-control-file=true --always-resume=false --allow-overwrite=true --check-certificate=false --dir ${
       dir.length ? dir : './'
     } -x 10 -s 10 -o ${file} ${uri} && mv -f ${[...dirArr, file].join('/')} ${[
       ...dirArr,
