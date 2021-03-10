@@ -3,7 +3,7 @@ import { DecompressService } from '../decompress/decompress.service';
 import { FetcherService } from '../fetcher/fetcher.service';
 import { DataService } from '../data/data.service';
 import { Observable, of, ReplaySubject, timer } from 'rxjs';
-import { expand, first, map, switchMap, tap } from 'rxjs/operators';
+import { expand, first, map, switchMap, tap, timeout } from 'rxjs/operators';
 import { Currency } from '../../models/currency';
 import { Market } from '../../models/markets';
 import { Rate } from '../../models/rate';
@@ -44,7 +44,14 @@ export class ClientService {
           this.updateData().pipe(switchMap(() => timer(this.WATCH_TIME))),
         ),
       )
-      .subscribe();
+      .subscribe(
+        () => {},
+        err => {
+          console.log(`error occurred during fetching rates`);
+          console.log(err);
+          this.runObserver();
+        },
+      );
   }
 
   private updateData(): Observable<boolean> {
@@ -70,6 +77,7 @@ export class ClientService {
         this.markets$.next(markets);
       }),
       map(() => true),
+      timeout(60 * 2 * 1000),
     );
   }
 
