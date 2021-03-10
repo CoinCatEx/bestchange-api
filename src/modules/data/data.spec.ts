@@ -17,8 +17,8 @@ describe('Data spec', () => {
   describe('data testing', () => {
     it('convert string date to local time', done => {
       const dataService = app.get<DataService>(DataService);
-      const d = '23:24:32, 13 августа';
-      const expected = new Date(1597350272000);
+      const d = '15:59:26, 10 марта';
+      const expected = new Date(1615370366000);
       expected.setMilliseconds(0);
       const res = dataService.convertToDate(d, 3);
       res.setMilliseconds(0);
