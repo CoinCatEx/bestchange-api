@@ -75,7 +75,9 @@ export class DataService {
     date.setHours(parseInt(hoursArr[0], 10));
     date.setMinutes(parseInt(hoursArr[1], 10));
     date.setSeconds(parseInt(hoursArr[2], 10));
+    const year = date.getFullYear();
     date.setHours(date.getHours() - gmt);
+    date.setFullYear(year);
     console.log(`got ${date.toString()} updated`);
     return date;
   }
