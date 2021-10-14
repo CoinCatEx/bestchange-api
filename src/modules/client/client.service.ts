@@ -97,26 +97,28 @@ export class ClientService {
       eMap[e.id] = e;
     });
     rates.forEach(rate => {
-      const from = cMap[rate.from];
-      const to = cMap[rate.to];
-      const name = `${from.code}-${to.code}`;
-      if (!rMap[name]) {
-        rMap[name] = plainToClass(Market, {
-          name,
-          from,
-          to,
-          exchanges: [],
-        });
+      if (eMap[rate.exchangeId].name.toLowerCase() !== 'coincat') {
+        const from = cMap[rate.from];
+        const to = cMap[rate.to];
+        const name = `${from.code}-${to.code}`;
+        if (!rMap[name]) {
+          rMap[name] = plainToClass(Market, {
+            name,
+            from,
+            to,
+            exchanges: [],
+          });
+        }
+        rMap[name].updated = updated;
+        rMap[name].exchanges.push(
+          plainToClass(Exchange, {
+            name: eMap[rate.exchangeId].name,
+            priceFrom: rate.priceFrom,
+            priceTo: rate.priceTo,
+            reserve: rate.reserve,
+          }),
+        );
       }
-      rMap[name].updated = updated;
-      rMap[name].exchanges.push(
-        plainToClass(Exchange, {
-          name: eMap[rate.exchangeId].name,
-          priceFrom: rate.priceFrom,
-          priceTo: rate.priceTo,
-          reserve: rate.reserve,
-        }),
-      );
     });
     return Object.values(rMap);
   }

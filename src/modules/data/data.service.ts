@@ -12,8 +12,12 @@ export class DataService {
   getCurrencies(currecies: Buffer, codes: Buffer): Currency[] {
     console.log(`obtaining currencies from Buffer...`);
     let mapper: { [key: string]: Currency } = {};
+    const codesMap = this.getData(codes).reduce((acc, curr) => {
+      acc[curr[0]] = curr[1];
+      return acc;
+    }, {});
     const cs = this.getData(currecies).map(item => {
-      let code = item[2];
+      let code = codesMap[item[0]];
       if (code.includes('(')) {
         code = item[3];
       }
