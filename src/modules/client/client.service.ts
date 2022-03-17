@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DecompressService } from '../decompress/decompress.service';
 import { FetcherService } from '../fetcher/fetcher.service';
 import { DataService } from '../data/data.service';
-import { Observable, of, ReplaySubject, timer } from 'rxjs';
+import { Observable, of, ReplaySubject, throwError, timer } from 'rxjs';
 import { expand, first, map, switchMap, tap, timeout } from 'rxjs/operators';
 import { Currency } from '../../models/currency';
 import { Market } from '../../models/markets';
@@ -49,31 +49,43 @@ export class ClientService {
         err => {
           console.log(`error occurred during fetching rates`);
           console.log(err);
-          this.runObserver();
+          setTimeout(() => {
+            this.runObserver();
+          }, 1000);
         },
       );
   }
 
   private updateData(): Observable<boolean> {
+    console.log(`start updating data`);
     return this.fetcherSerice.fetchData(this.API_URI, this.FILE_NAME).pipe(
-      switchMap(path => this.decompressSerice.getFilesData(path)),
-      tap(files => {
+      switchMap(path =>
+        path
+          ? this.decompressSerice.getFilesData(path)
+          : throwError(`no data fetched`),
+      ),
+      tap(async files => {
         const cyFile = files.find(f => f.fileName === this.FILE_CURRECNIES)
           .data;
         const cyCodeFile = files.find(
           f => f.fileName === this.FILE_CURRECNIES_CODES,
         ).data;
-        const currencies = this.dataSerice.getCurrencies(cyFile, cyCodeFile);
+        const currencies = await this.dataSerice.getCurrencies(
+          cyFile,
+          cyCodeFile,
+        );
         this.currecnies$.next(currencies);
 
         const infoFile = files.find(f => f.fileName === this.FILE_INFO).data;
         const ratesFile = files.find(f => f.fileName === this.FILE_RATES).data;
         const exchangesFile = files.find(f => f.fileName === this.FILE_EXCHANGE)
           .data;
-        const rates = this.dataSerice.getRates(ratesFile);
-        const updated = this.dataSerice.getUpdated(infoFile);
-        const bexchs = this.dataSerice.getExchanges(exchangesFile);
+        const rates = await this.dataSerice.getRates(ratesFile);
+        const updated = await this.dataSerice.getUpdated(infoFile);
+        const bexchs = await this.dataSerice.getExchanges(exchangesFile);
+        console.log(`start preparing markets`);
         const markets = this.prepareMarkets(rates, currencies, bexchs, updated);
+        console.log(`markets prepared`);
         this.markets$.next(markets);
       }),
       map(() => true),

@@ -1,72 +1,76 @@
 import { Injectable } from '@nestjs/common';
 import { Currency } from '../../models/currency';
-import { plainToClass } from 'class-transformer';
 import { Rate } from '../../models/rate';
 import { BExchange } from '../../models/bexchange';
-import { Iconv } from 'iconv';
+import { StaticPool } from 'node-worker-threads-pool';
 
 @Injectable()
 export class DataService {
+  private workerDecompress = new StaticPool({
+    size: 1,
+    task: __dirname + '/../../worker.js',
+    workerData: {
+      path: './modules/data/decompress-worker',
+    },
+  });
+  private workerExchanges = new StaticPool({
+    size: 1,
+    task: __dirname + '/../../worker.js',
+    workerData: {
+      path: './modules/data/exchanges-worker',
+    },
+  });
+  private worderRates = new StaticPool({
+    size: 1,
+    task: __dirname + '/../../worker.js',
+    workerData: {
+      path: './modules/data/rates-worker',
+    },
+  });
+  private worderCurrencies = new StaticPool({
+    size: 1,
+    task: __dirname + '/../../worker.js',
+    workerData: {
+      path: './modules/data/currencies-worker',
+    },
+  });
+
   constructor() {}
 
-  getCurrencies(currecies: Buffer, codes: Buffer): Currency[] {
+  async getCurrencies(currencies: Buffer, codes: Buffer): Promise<Currency[]> {
     console.log(`obtaining currencies from Buffer...`);
-    let mapper: { [key: string]: Currency } = {};
-    const codesMap = this.getData(codes).reduce((acc, curr) => {
-      acc[curr[0]] = curr[1];
-      return acc;
-    }, {});
-    const cs = this.getData(currecies).map(item => {
-      let code = codesMap[item[0]];
-      if (code.includes('(')) {
-        code = item[3];
-      }
-      const c = plainToClass(Currency, {
-        id: item[0],
-        code,
-      });
-      mapper[c.id] = c;
-      return c;
-    });
-    this.getData(currecies).forEach(item => {
-      mapper[item[0]].linkCode = item[1];
+    const cs = await this.worderCurrencies.exec({
+      currencies: await this.getData(currencies),
+      codes: await this.getData(codes),
     });
     console.log(`got ${cs.length} currencies`);
     return cs;
   }
 
-  getRates(data: Buffer): Rate[] {
+  async getRates(data: Buffer): Promise<Rate[]> {
     console.log(`obtaining rates from Buffer...`);
-    const rates = this.getData(data).map(item => {
-      return plainToClass(Rate, {
-        from: item[0],
-        to: item[1],
-        exchangeId: item[2],
-        priceFrom: item[3],
-        priceTo: item[4],
-        reserve: item[5],
-        reviews: item[6],
-      });
+    const rates = await this.worderRates.exec({
+      data: await this.getData(data),
     });
     console.log(`got ${rates.length} rates`);
     return rates;
   }
 
-  getExchanges(data: Buffer): BExchange[] {
+  async getExchanges(data: Buffer): Promise<BExchange[]> {
     console.log(`obtaining exchanges from Buffer...`);
-    const exchanges = this.getData(data).map(item => {
-      return plainToClass(BExchange, {
-        id: item[0],
-        name: item[1],
-      });
+    const exchanges = await this.workerExchanges.exec({
+      data: await this.getData(data),
     });
-    console.log(`got ${exchanges.length} rates`);
+    console.log(`got ${exchanges.length} exchanges`);
     return exchanges;
   }
 
-  getUpdated(data: Buffer): Date {
+  async getUpdated(data: Buffer): Promise<Date> {
     console.log(`obtaining updated from Buffer...`);
-    return this.convertToDate(this.getData(data)[0][0].split('=')[1], 3);
+    return this.convertToDate(
+      (await this.getData(data))[0][0].split('=')[1],
+      3,
+    );
   }
 
   convertToDate(str: string, gmt = 0): Date {
@@ -86,11 +90,10 @@ export class DataService {
     return date;
   }
 
-  private getData(data: Buffer): any[][] {
-    const conv = Iconv('windows-1251', 'utf8');
-    const content = conv.convert(data).toString();
-    const lines = content.split(/\r?\n/g);
-    return lines.map(line => line.split(';'));
+  private async getData(data: Buffer): Promise<any[][]> {
+    return this.workerDecompress.exec({
+      data,
+    });
   }
 
   private mapMonth(month: string): number {
