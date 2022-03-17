@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "./node_modules/.bin/tsc --project tsconfig.json",
-    "build:prod": "./node_modules/.bin/tsc --project tsconfig-prod.json",
+    "build:prod": "./node_modules/.bin/tsc --project tsconfig-prod.json && cp ./src/worker.js build/",
     "format": "prettier --write \"src/**/*.ts\"",
     "start:dev": "nodemon",
     "start:debug": "nodemon  --config nodemon-debug.json",
